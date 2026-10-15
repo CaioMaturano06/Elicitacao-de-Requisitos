@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Matricula" targetNamespace="http://bpmn.io/schema/bpmn">
+<bpmn:message id="Message_Request" name="Solicitação de cobrança"/><bpmn:message id="Message_Confirmation" name="Confirmação de pagamento"/>
+<bpmn:collaboration id="Collaboration_Matricula">
+<bpmn:participant id="Participant_Faculdade" name="Faculdade" processRef="Process_Matricula"/>
+<bpmn:participant id="Participant_Pagamento" name="Sistema de pagamento" processRef="Process_Pagamento"/>
+<bpmn:messageFlow id="MessageFlow_Request" name="Solicitar cobrança" sourceRef="Task_EnviarCobranca" targetRef="Start_Pagamento" messageRef="Message_Request"/>
+<bpmn:messageFlow id="MessageFlow_Confirmation" name="Confirmar pagamento" sourceRef="End_Pagamento" targetRef="Task_RegistrarPagamento" messageRef="Message_Confirmation"/>
+</bpmn:collaboration>
+<bpmn:process id="Process_Matricula" name="Matrícula de aluno" isExecutable="false">
+<bpmn:laneSet id="LaneSet_Faculdade">
+<bpmn:lane id="Lane_Aluno" name="Aluno"><bpmn:flowNodeRef>Start_Matricula</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Preencher</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Corrigir</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_SelecionarCurso</bpmn:flowNodeRef></bpmn:lane>
+<bpmn:lane id="Lane_Secretaria" name="Secretaria acadêmica"><bpmn:flowNodeRef>Task_Conferir</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Documentos</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Paralelo</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Validar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_EnviarCobranca</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_RegistrarPagamento</bpmn:flowNodeRef><bpmn:flowNodeRef>Gateway_Juntar</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Confirmar</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Matricula</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet>
+<bpmn:startEvent id="Start_Matricula" name="Solicitação recebida"/><bpmn:task id="Task_Preencher" name="Preencher formulário de matrícula"/><bpmn:task id="Task_Conferir" name="Conferir documentos"/><bpmn:exclusiveGateway id="Gateway_Documentos" name="Documentos completos?"/><bpmn:task id="Task_Corrigir" name="Corrigir dados ou documentos"/><bpmn:task id="Task_SelecionarCurso" name="Selecionar curso e turma"/><bpmn:parallelGateway id="Gateway_Paralelo" name="Iniciar verificações em paralelo" gatewayDirection="Diverging"/><bpmn:task id="Task_Validar" name="Validar pré-requisitos"/><bpmn:task id="Task_EnviarCobranca" name="Enviar solicitação de cobrança"/><bpmn:task id="Task_RegistrarPagamento" name="Registrar confirmação do pagamento"/><bpmn:parallelGateway id="Gateway_Juntar" name="Verificações concluídas" gatewayDirection="Converging"/><bpmn:task id="Task_Confirmar" name="Confirmar matrícula"/><bpmn:endEvent id="End_Matricula" name="Matrícula efetivada"/>
+<bpmn:sequenceFlow id="F1" sourceRef="Start_Matricula" targetRef="Task_Preencher"/><bpmn:sequenceFlow id="F2" sourceRef="Task_Preencher" targetRef="Task_Conferir"/><bpmn:sequenceFlow id="F3" sourceRef="Task_Conferir" targetRef="Gateway_Documentos"/><bpmn:sequenceFlow id="F4_Sim" name="Sim" sourceRef="Gateway_Documentos" targetRef="Task_SelecionarCurso"/><bpmn:sequenceFlow id="F4_Nao" name="Não" sourceRef="Gateway_Documentos" targetRef="Task_Corrigir"/><bpmn:sequenceFlow id="F5" sourceRef="Task_Corrigir" targetRef="Task_Preencher"/><bpmn:sequenceFlow id="F6" sourceRef="Task_SelecionarCurso" targetRef="Gateway_Paralelo"/><bpmn:sequenceFlow id="F7" sourceRef="Gateway_Paralelo" targetRef="Task_Validar"/><bpmn:sequenceFlow id="F8" sourceRef="Gateway_Paralelo" targetRef="Task_EnviarCobranca"/><bpmn:sequenceFlow id="F9" sourceRef="Task_Validar" targetRef="Gateway_Juntar"/><bpmn:sequenceFlow id="F10" sourceRef="Task_EnviarCobranca" targetRef="Task_RegistrarPagamento"/><bpmn:sequenceFlow id="F11" sourceRef="Task_RegistrarPagamento" targetRef="Gateway_Juntar"/><bpmn:sequenceFlow id="F12" sourceRef="Gateway_Juntar" targetRef="Task_Confirmar"/><bpmn:sequenceFlow id="F13" sourceRef="Task_Confirmar" targetRef="End_Matricula"/>
+</bpmn:process>
+<bpmn:process id="Process_Pagamento" name="Processamento de pagamento" isExecutable="false">
+<bpmn:startEvent id="Start_Pagamento" name="Cobrança recebida"><bpmn:messageEventDefinition id="StartMessageDefinition" messageRef="Message_Request"/></bpmn:startEvent><bpmn:task id="Task_ProcessarPagamento" name="Processar pagamento"/><bpmn:endEvent id="End_Pagamento" name="Resultado enviado"><bpmn:messageEventDefinition id="EndMessageDefinition" messageRef="Message_Confirmation"/></bpmn:endEvent><bpmn:sequenceFlow id="PF1" sourceRef="Start_Pagamento" targetRef="Task_ProcessarPagamento"/><bpmn:sequenceFlow id="PF2" sourceRef="Task_ProcessarPagamento" targetRef="End_Pagamento"/>
+</bpmn:process>
+
+<bpmndi:BPMNDiagram id="Diagram_Matricula"><bpmndi:BPMNPlane id="Plane_Matricula" bpmnElement="Collaboration_Matricula">
+<bpmndi:BPMNShape id="Shape_Faculdade" bpmnElement="Participant_Faculdade" isHorizontal="true"><dc:Bounds x="80" y="80" width="1600" height="490"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Aluno" bpmnElement="Lane_Aluno" isHorizontal="true"><dc:Bounds x="110" y="80" width="1570" height="220"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Secretaria" bpmnElement="Lane_Secretaria" isHorizontal="true"><dc:Bounds x="110" y="300" width="1570" height="270"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Pagamento" bpmnElement="Participant_Pagamento" isHorizontal="true"><dc:Bounds x="80" y="680" width="1600" height="150"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Start_Matricula" bpmnElement="Start_Matricula"><dc:Bounds x="150" y="175" width="36" height="36"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_Preencher" bpmnElement="Task_Preencher"><dc:Bounds x="220" y="155" width="150" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_Conferir" bpmnElement="Task_Conferir"><dc:Bounds x="400" y="390" width="150" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Gateway_Documentos" bpmnElement="Gateway_Documentos"><dc:Bounds x="590" y="402" width="50" height="50"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_Corrigir" bpmnElement="Task_Corrigir"><dc:Bounds x="450" y="210" width="150" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_SelecionarCurso" bpmnElement="Task_SelecionarCurso"><dc:Bounds x="700" y="155" width="155" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Gateway_Paralelo" bpmnElement="Gateway_Paralelo"><dc:Bounds x="900" y="402" width="50" height="50"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_Validar" bpmnElement="Task_Validar"><dc:Bounds x="1000" y="350" width="165" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_EnviarCobranca" bpmnElement="Task_EnviarCobranca"><dc:Bounds x="1000" y="485" width="165" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_RegistrarPagamento" bpmnElement="Task_RegistrarPagamento"><dc:Bounds x="1290" y="485" width="175" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Gateway_Juntar" bpmnElement="Gateway_Juntar"><dc:Bounds x="1510" y="402" width="50" height="50"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_Confirmar" bpmnElement="Task_Confirmar"><dc:Bounds x="1570" y="350" width="100" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_End_Matricula" bpmnElement="End_Matricula"><dc:Bounds x="1640" y="175" width="36" height="36"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Start_Pagamento" bpmnElement="Start_Pagamento"><dc:Bounds x="1100" y="735" width="36" height="36"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_Task_ProcessarPagamento" bpmnElement="Task_ProcessarPagamento"><dc:Bounds x="1200" y="715" width="170" height="75"/></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Shape_End_Pagamento" bpmnElement="End_Pagamento"><dc:Bounds x="1450" y="735" width="36" height="36"/></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="Edge_F1" bpmnElement="F1"><di:waypoint x="186" y="193"/><di:waypoint x="220" y="193"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F2" bpmnElement="F2"><di:waypoint x="370" y="193"/><di:waypoint x="385" y="193"/><di:waypoint x="385" y="427"/><di:waypoint x="400" y="427"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F3" bpmnElement="F3"><di:waypoint x="550" y="427"/><di:waypoint x="590" y="427"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F4_Sim" bpmnElement="F4_Sim"><di:waypoint x="615" y="402"/><di:waypoint x="615" y="193"/><di:waypoint x="700" y="193"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F4_Nao" bpmnElement="F4_Nao"><di:waypoint x="615" y="452"/><di:waypoint x="615" y="245"/><di:waypoint x="600" y="245"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F5" bpmnElement="F5"><di:waypoint x="450" y="245"/><di:waypoint x="420" y="245"/><di:waypoint x="420" y="155"/><di:waypoint x="295" y="155"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F6" bpmnElement="F6"><di:waypoint x="855" y="193"/><di:waypoint x="925" y="193"/><di:waypoint x="925" y="402"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F7" bpmnElement="F7"><di:waypoint x="925" y="402"/><di:waypoint x="925" y="387"/><di:waypoint x="1000" y="387"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F8" bpmnElement="F8"><di:waypoint x="925" y="452"/><di:waypoint x="925" y="522"/><di:waypoint x="1000" y="522"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F9" bpmnElement="F9"><di:waypoint x="1165" y="387"/><di:waypoint x="1535" y="387"/><di:waypoint x="1535" y="402"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F10" bpmnElement="F10"><di:waypoint x="1165" y="522"/><di:waypoint x="1290" y="522"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F11" bpmnElement="F11"><di:waypoint x="1465" y="522"/><di:waypoint x="1535" y="522"/><di:waypoint x="1535" y="452"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F12" bpmnElement="F12"><di:waypoint x="1560" y="427"/><di:waypoint x="1570" y="387"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_F13" bpmnElement="F13"><di:waypoint x="1670" y="387"/><di:waypoint x="1690" y="387"/><di:waypoint x="1690" y="193"/><di:waypoint x="1676" y="193"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_PF1" bpmnElement="PF1"><di:waypoint x="1136" y="753"/><di:waypoint x="1200" y="753"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_PF2" bpmnElement="PF2"><di:waypoint x="1370" y="753"/><di:waypoint x="1450" y="753"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_MessageFlow_Request" bpmnElement="MessageFlow_Request"><di:waypoint x="1082" y="560"/><di:waypoint x="1082" y="625"/><di:waypoint x="1118" y="625"/><di:waypoint x="1118" y="735"/></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Edge_MessageFlow_Confirmation" bpmnElement="MessageFlow_Confirmation"><di:waypoint x="1468" y="735"/><di:waypoint x="1468" y="625"/><di:waypoint x="1378" y="625"/><di:waypoint x="1378" y="560"/></bpmndi:BPMNEdge>
+</bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>
