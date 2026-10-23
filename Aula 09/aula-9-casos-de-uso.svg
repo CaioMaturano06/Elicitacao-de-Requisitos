@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+<defs><style>
+.title{font:bold 27px Arial;fill:#16324f}.boundary{fill:#f8fafc;stroke:#2563eb;stroke-width:2}.ellipse{fill:#dbeafe;stroke:#2563eb;stroke-width:2}.actor{stroke:#334155;stroke-width:3;fill:none}.txt{font:17px Arial;fill:#172554;text-anchor:middle}.label{font:18px Arial;fill:#16324f;font-weight:bold}.line{stroke:#334155;stroke-width:2;fill:none}
+</style></defs><rect width="1200" height="700" fill="#fff"/><text x="45" y="55" class="title">Diagrama de casos de uso — Sistema de Férias</text>
+<rect x="280" y="100" width="600" height="470" rx="3" class="boundary"/><path d="M280 140 H880" stroke="#2563eb" stroke-width="2"/><text x="580" y="128" class="label" text-anchor="middle">Sistema de Férias</text>
+<ellipse cx="480" cy="195" rx="90" ry="34" class="ellipse"/><text x="480" y="201" class="txt">Solicitar férias</text>
+<ellipse cx="480" cy="300" rx="90" ry="34" class="ellipse"/><text x="480" y="306" class="txt">Acompanhar pedido</text>
+<ellipse cx="700" cy="245" rx="90" ry="34" class="ellipse"/><text x="700" y="251" class="txt">Analisar pedido</text>
+<ellipse cx="700" cy="385" rx="90" ry="34" class="ellipse"/><text x="700" y="391" class="txt">Registrar férias</text>
+<!-- Colaborador actor -->
+<circle cx="145" cy="225" r="15" class="actor"/><path d="M145 240 V290 M115 258 H175 M145 290 L120 325 M145 290 L170 325" class="actor"/><text x="145" y="350" class="txt">Colaborador</text>
+<!-- Gestor actor -->
+<circle cx="1030" cy="235" r="15" class="actor"/><path d="M1030 250 V300 M1000 268 H1060 M1030 300 L1005 335 M1030 300 L1055 335" class="actor"/><text x="1030" y="360" class="txt">Gestor</text>
+<!-- system actor -->
+<circle cx="1030" cy="435" r="15" class="actor"/><path d="M1030 450 V500 M1000 468 H1060 M1030 500 L1005 535 M1030 500 L1055 535" class="actor"/><text x="1030" y="560" class="txt">Sistema de folha</text><text x="1030" y="580" class="txt">de pagamento</text>
+<path d="M175 258 L390 195 M175 275 L390 300 M1000 270 L790 245 M1000 290 L790 385 M1000 465 L790 385" class="line"/>
+<rect x="45" y="620" width="1110" height="45" rx="9" fill="#eff6ff" stroke="#bfdbfe"/><text x="65" y="648" font-family="Arial" font-size="16" fill="#334155">Atores: colaborador e gestor (principais); sistema de folha de pagamento (secundário).</text>
+</svg>
